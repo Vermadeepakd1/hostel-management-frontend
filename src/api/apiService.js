@@ -66,6 +66,15 @@ export const getStudentProfile = async () => {
   const response = await axios.get('/student/profile');
   return response.data;
 };
+export const getStudentComplaints = async () => {
+  const response = await axios.get('/student/complaint');
+  return response.data;
+};
+
+export const submitStudentComplaint = async (description) => {
+  const response = await axios.post('/student/complaint', { description });
+  return response.data;
+};
 
 // --- ROOM CRUD FUNCTIONS ---
 export const addRoom = async (roomData) => {

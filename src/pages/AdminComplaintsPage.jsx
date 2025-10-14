@@ -28,19 +28,21 @@ function AdminComplaintsPage() {
   const handleStatusChange = async (id, newStatus) => {
     try {
         await updateComplaintStatus(id, newStatus);
-        // Refresh the list to show the updated status
-        fetchComplaints();
+        // Update the status locally for an instant UI update
+        setComplaints(prevComplaints =>
+            prevComplaints.map(c => c.id === id ? { ...c, status: newStatus } : c)
+        );
     } catch (err) {
         console.error("Failed to update status:", err);
-        // Optionally, show an error message to the user
+        // Optionally, show an error message
     }
   };
   
   const StatusBadge = ({ status }) => {
     const statusClasses = {
-      Open: 'bg-yellow-100 text-yellow-800',
+      'Pending': 'bg-yellow-100 text-yellow-800',
       'In Progress': 'bg-blue-100 text-blue-800',
-      Resolved: 'bg-green-100 text-green-800',
+      'Resolved': 'bg-green-100 text-green-800',
     };
     return <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusClasses[status] || 'bg-gray-100'}`}>{status}</span>;
   };
@@ -51,7 +53,7 @@ function AdminComplaintsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Manage Complaints</h1>
-        <button onClick={fetchComplaints} className="text-gray-600 hover:text-blue-600 transition-colors">
+        <button onClick={fetchComplaints} className="text-gray-600 hover:text-blue-600 transition-colors p-2 rounded-full hover:bg-gray-100">
           <FiRefreshCw size={20} />
         </button>
       </div>
@@ -72,15 +74,15 @@ function AdminComplaintsPage() {
                 <tr key={complaint.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{complaint.student_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{complaint.room_no}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-sm whitespace-normal">{complaint.description}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 max-w-sm whitespace-normal">{complaint.description}</td>
                   <td className="px-6 py-4 text-sm"><StatusBadge status={complaint.status} /></td>
                   <td className="px-6 py-4 text-sm">
                     <select 
                       onChange={(e) => handleStatusChange(complaint.id, e.target.value)}
                       value={complaint.status}
-                      className="p-1 border rounded-md"
+                      className="p-1 border rounded-md bg-white"
                     >
-                      <option value="Open">Open</option>
+                      <option value="Pending">Pending</option>
                       <option value="In Progress">In Progress</option>
                       <option value="Resolved">Resolved</option>
                     </select>

@@ -4,16 +4,15 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboardPage from './pages/AdminDashboardPage';
-// THIS LINE IS CORRECTED
 import AdminStudentsPage from './pages/AdminStudentsPage';
 import AdminRoomsPage from './pages/AdminRoomsPage';
+import AdminComplaintsPage from './pages/AdminComplaintsPage'; // Import the new page
 import StudentLayout from './components/StudentLayout';
 import StudentDashboardPage from './pages/StudentDashboardPage';
-
+import StudentComplaintsPage from './pages/StudentComplaintsPage';
 // Placeholders for pages we will build
-const AdminComplaintsPage = () => <div>Complaints Page</div>;
 const StudentFeesPage = () => <div>My Fees Page</div>;
-const StudentComplaintsPage = () => <div>My Complaints Page</div>;
+// const StudentComplaintsPage = () => <div>My Complaints Page</div>;
 
 function App() {
   return (
@@ -28,7 +27,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="students" element={<AdminStudentsPage />} />
           <Route path="rooms" element={<AdminRoomsPage />} />
-          <Route path="complaints" element={<AdminComplaintsPage />} />
+          <Route path="complaints" element={<AdminComplaintsPage />} /> {/* Use the real component */}
         </Route>
 
         {/* Student Routes */}
@@ -36,7 +35,6 @@ function App() {
             <Route index element={<StudentDashboardPage />} />
             <Route path="dashboard" element={<StudentDashboardPage />} />
             <Route path="fees" element={<StudentFeesPage />} />
-            {/* THIS LINE IS CORRECTED */}
             <Route path="complaints" element={<StudentComplaintsPage />} />
         </Route>
         
