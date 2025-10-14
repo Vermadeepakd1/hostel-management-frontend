@@ -2,15 +2,18 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
+import AdminLayout from './components/AdminLayout';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+// THIS LINE IS CORRECTED
 import AdminStudentsPage from './pages/AdminStudentsPage';
-// import AdminProfilePage from './pages/AdminProfilePage';
-import AdminLayout from './components/AdminLayout'; // Corrected path
+import AdminRoomsPage from './pages/AdminRoomsPage';
+import StudentLayout from './components/StudentLayout';
+import StudentDashboardPage from './pages/StudentDashboardPage';
 
-// We can create placeholder pages for the other links
-const AdminRoomsPage = () => <div>Rooms Page</div>;
+// Placeholders for pages we will build
 const AdminComplaintsPage = () => <div>Complaints Page</div>;
-const StudentDashboardPage = () => <div>Student Dashboard</div>;
+const StudentFeesPage = () => <div>My Fees Page</div>;
+const StudentComplaintsPage = () => <div>My Complaints Page</div>;
 
 function App() {
   return (
@@ -19,18 +22,23 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
 
-        {/* Admin Routes Grouped Under AdminLayout */}
+        {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="students" element={<AdminStudentsPage />} />
-          {/* <Route path="profile" element={<AdminProfilePage />} /> */}
           <Route path="rooms" element={<AdminRoomsPage />} />
           <Route path="complaints" element={<AdminComplaintsPage />} />
         </Route>
 
         {/* Student Routes */}
-        <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+        <Route path="/student" element={<StudentLayout />}>
+            <Route index element={<StudentDashboardPage />} />
+            <Route path="dashboard" element={<StudentDashboardPage />} />
+            <Route path="fees" element={<StudentFeesPage />} />
+            {/* THIS LINE IS CORRECTED */}
+            <Route path="complaints" element={<StudentComplaintsPage />} />
+        </Route>
         
       </Routes>
     </BrowserRouter>

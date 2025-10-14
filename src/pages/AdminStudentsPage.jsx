@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import StudentForm from '../components/StudentForm';
 import { getStudents, addStudent, updateStudent, deleteStudent } from '../api/apiService';
-import { FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiSearch } from 'react-icons/fi';
 
 const INITIAL_STUDENT_STATE = {
   name: '', roll_no: '', email: '', phone: '', room_no: '',
@@ -13,21 +13,22 @@ const INITIAL_STUDENT_STATE = {
 };
 
 function AdminStudentsPage() {
-  const [students, setStudents] = useState([]);
+  const [students, setStudents] = useState([]); // This will be our master list
+  const [filteredStudents, setFilteredStudents] = useState([]); // This is the list we display
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
+  const [modalMode, setModalMode] = useState('add');
   const [selectedStudent, setSelectedStudent] = useState(INITIAL_STUDENT_STATE);
+  const [searchQuery, setSearchQuery] = useState(''); // State for the search input
 
   const fetchStudents = async () => {
     try {
-    setIsLoading(true);
-    const data = await getStudents();
-    // console.log(data);
-
-    setStudents(data);
-     }catch (err) {
+      setIsLoading(true);
+      const data = await getStudents();
+      setStudents(data); // Set the master list
+      setFilteredStudents(data); // Initially, the filtered list is the full list
+    } catch (err) {
       setError('Failed to fetch students. Please log in again.');
     } finally {
       setIsLoading(false);
@@ -37,6 +38,16 @@ function AdminStudentsPage() {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  // This useEffect will run whenever the search query changes
+  useEffect(() => {
+    const result = students.filter(student =>
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.roll_no.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredStudents(result);
+  }, [searchQuery, students]);
+
 
   const openAddModal = () => {
     setModalMode('add');
@@ -59,10 +70,9 @@ function AdminStudentsPage() {
         await updateStudent(selectedStudent.id, selectedStudent);
       }
       setIsModalOpen(false);
-      fetchStudents();
+      fetchStudents(); // Re-fetch all students to get the latest data
     } catch (err) {
       console.error("Failed to save student:", err);
-      // You can set an error state here to show in the modal
     }
   };
 
@@ -70,7 +80,7 @@ function AdminStudentsPage() {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         await deleteStudent(id);
-        fetchStudents();
+        fetchStudents(); // Re-fetch all students
       } catch (err) {
         console.error("Failed to delete student:", err);
       }
@@ -87,6 +97,20 @@ function AdminStudentsPage() {
           <FiPlus /><span>Add Student</span>
         </button>
       </div>
+
+      {/* --- Search Bar --- */}
+      <div className="mb-4 relative">
+        <FiSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by name or roll number..."
+          className="w-full pl-10 pr-4 py-2 border rounded-lg"
+        />
+      </div>
+      {/* -------------------- */}
+      
       {error && <div className="bg-red-100 p-3 rounded-md text-red-700">{error}</div>}
       <div className="bg-white shadow-md rounded-lg overflow-x-auto border">
         <table className="min-w-full divide-y divide-gray-200">
@@ -99,7 +123,8 @@ function AdminStudentsPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {students.map((student) => (
+            {/* We now map over the filteredStudents list */}
+            {filteredStudents.map((student) => (
               <tr key={student.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm text-gray-900">{student.name}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">{student.roll_no}</td>
