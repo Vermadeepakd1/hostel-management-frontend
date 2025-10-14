@@ -54,6 +54,7 @@ function Header() {
               <NavItem to="/admin/students">Students</NavItem>
               <NavItem to="/admin/rooms">Rooms</NavItem>
               <NavItem to="/admin/complaints">Complaints</NavItem>
+              <NavItem to="/admin/fees">Fees</NavItem>
             </div>
           </div>
 

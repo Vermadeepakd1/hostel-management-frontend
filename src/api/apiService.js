@@ -76,6 +76,16 @@ export const submitStudentComplaint = async (description) => {
   return response.data;
 };
 
+export const getStudentFees = async () => {
+  const response = await axios.get('/student/fees');
+  return response.data;
+};
+
+export const changeStudentPassword = async (oldPassword, newPassword) => {
+  const response = await axios.post('/auth/student/change-password', { oldPassword, newPassword });
+  return response.data;
+};
+
 // --- ROOM CRUD FUNCTIONS ---
 export const addRoom = async (roomData) => {
   const response = await axios.post('/rooms/add', roomData);
@@ -93,5 +103,16 @@ export const deleteRoom = async (id) => {
   // Your backend API doc doesn't specify a delete route for rooms,
   // but we can add it here for future use.
   const response = await axios.delete(`/rooms/delete/${id}`);
+  return response.data;
+};
+
+// --- FEE MANAGEMENT FUNCTIONS ---
+export const getStudentFeeHistory = async (studentId) => {
+  const response = await axios.get(`/fees/student/${studentId}`);
+  return response.data;
+};
+
+export const addFeePayment = async (feeData) => {
+  const response = await axios.post('/fees/add', feeData);
   return response.data;
 };

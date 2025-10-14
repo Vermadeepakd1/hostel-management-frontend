@@ -37,6 +37,7 @@ function StudentLayout() {
                 <NavItem to="/student/dashboard">Dashboard</NavItem>
                 <NavItem to="/student/fees">My Fees</NavItem>
                 <NavItem to="/student/complaints">My Complaints</NavItem>
+                <NavItem to="/student/profile">My Profile</NavItem>
               </div>
             </div>
             <div className="flex items-center">
