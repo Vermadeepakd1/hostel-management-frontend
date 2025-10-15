@@ -2,8 +2,12 @@
 
 import axios from 'axios';
 
-axios.defaults.baseURL = '/api';
+// axios.defaults.baseURL = '/api';
+// axios.defaults.withCredentials = true;
+// New way as we remove proxy 
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.withCredentials = true;
+
 
 // --- AUTH FUNCTIONS ---
 export const loginAdmin = async (username, password) => {
