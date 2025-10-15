@@ -11,7 +11,9 @@ axios.defaults.withCredentials = true;
 
 // --- AUTH FUNCTIONS ---
 export const loginAdmin = async (username, password) => {
-  const response = await axios.post('/admin/login', { username, password });
+  const response = await axios.post('/admin/login', { username, password }, {
+    withCredentials: true 
+});
   return response.data;
 };
 
