@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginAdmin, loginStudent } from '../api/apiService';
-import { FaBed } from "react-icons/fa";
-// 1. Import the eye icons
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+
+// 1. Import your new images
+import CollegeLogo from '../assets/iiitdm_kurnool_logo.jpeg';
+import HostelImage from '../assets/Hostel_image.jpg';
 
 function LoginPage() {
   const [userType, setUserType] = useState('student');
@@ -13,7 +15,6 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // 2. New state for password visibility
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
@@ -21,7 +22,6 @@ function LoginPage() {
     event.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
       if (userType === 'student') {
         await loginStudent(identifier, password);
@@ -37,23 +37,29 @@ function LoginPage() {
     }
   };
 
-  // 3. Function to toggle the password visibility
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    // 2. Main container with the background image
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center font-sans"
+      style={{ backgroundImage: `url(${HostelImage})` }}
+    >
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+
+      {/* Login Form Container */}
+      <div className="relative bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
         
+        {/* 3. Updated Logo and Title Section */}
         <div className="flex flex-col items-center mb-6">
-          <div className="bg-blue-100 p-3 rounded-full mb-3">
-             <FaBed className="h-8 w-8 text-blue-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-center text-gray-800">
-            Hostel Management Portal
+          <img src={CollegeLogo} alt="College Logo" className="h-20 w-auto mb-4" />
+          <h2 className="text-3xl font-bold text-center text-gray-800">
+            Hostel Management System
           </h2>
-          <p className="text-gray-500">Please sign in to continue</p>
+          <p className="text-gray-500 mt-2">Please sign in to continue</p>
         </div>
 
         <form onSubmit={handleLogin}>
@@ -84,7 +90,6 @@ function LoginPage() {
             />
           </div>
 
-          {/* 4. UPDATED Password input section */}
           <div className="mb-6">
              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
              <div className="relative">
