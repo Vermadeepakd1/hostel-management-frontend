@@ -46,7 +46,7 @@ function LoginPage() {
       className="min-h-screen bg-cover bg-center flex items-center justify-center font-sans"
       style={{ backgroundImage: `url(/hostel_image.jpg)` }}>
       {/* Dark overlay for better readability */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      {/* <div className="absolute inset-0 bg-black bg-opacity-50"></div> */}
 
       {/* Login Form Container */}
       <div className="relative bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
