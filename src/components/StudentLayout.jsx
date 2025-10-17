@@ -1,15 +1,15 @@
 // src/components/StudentLayout.jsx
 
 import React from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'; // Import Link
 import { FaUserCircle } from 'react-icons/fa';
+// 1. Import your college logo
+import IIITDMLogo from '../assets/iiitdm_kurnool_logo.jpeg'; 
 
 function StudentLayout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // For now, we just navigate to the login page.
-    // We can add a backend logout call later if needed.
     navigate('/login');
   };
 
@@ -32,14 +32,18 @@ function StudentLayout() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
-              <span className="font-bold text-xl text-gray-800">Student Portal</span>
+              {/* 2. Replace the old Student Portal text with the new one */}
+              <Link to="/student/dashboard" className="flex items-center space-x-2">
+                <img src={IIITDMLogo} alt="IIITDM Kurnool Logo" className="h-9 w-auto" /> {/* Adjust height as needed */}
+                <span className="font-bold text-xl text-gray-800">Student Portal</span>
+              </Link>
               <div className="hidden md:flex items-center space-x-6">
                 <NavItem to="/student/dashboard">Dashboard</NavItem>
                 <NavItem to="/student/fees">My Fees</NavItem>
                 <NavItem to="/student/complaints">My Complaints</NavItem>
                 <NavItem to="/student/profile">My Profile</NavItem>
-                <NavLink to="/student/announcements" >Announcements</NavLink>
                 <NavItem to="/student/menu">Mess Menu</NavItem>
+                <NavItem to="/student/announcements">Announcements</NavItem>
               </div>
             </div>
             <div className="flex items-center">

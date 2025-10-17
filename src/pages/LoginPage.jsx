@@ -2,15 +2,19 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin, loginStudent } from '../api/apiService'; // Import our new login functions
+import { loginAdmin, loginStudent } from '../api/apiService';
 import { FaBed } from "react-icons/fa";
+// 1. Import the eye icons
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 function LoginPage() {
   const [userType, setUserType] = useState('student');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // To show a loading state
+  const [isLoading, setIsLoading] = useState(false);
+  // 2. New state for password visibility
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
@@ -31,6 +35,11 @@ function LoginPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 3. Function to toggle the password visibility
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
   };
 
   return (
@@ -75,15 +84,25 @@ function LoginPage() {
             />
           </div>
 
+          {/* 4. UPDATED Password input section */}
           <div className="mb-6">
              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+             <div className="relative">
+                <input
+                  type={isPasswordVisible ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                >
+                  {isPasswordVisible ? <FiEyeOff /> : <FiEye />}
+                </button>
+             </div>
           </div>
 
           <button
