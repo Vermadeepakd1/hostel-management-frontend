@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { loginAdmin, loginStudent } from '../api/apiService';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
-// 1. Import your new images
+// The logo is still imported from assets, which is correct.
 import CollegeLogo from '../assets/iiitdm_kurnool_logo.jpeg';
-import HostelImage from '../assets/Hostel_image.jpg';
+// The background image is no longer imported.
 
 function LoginPage() {
   const [userType, setUserType] = useState('student');
@@ -42,10 +42,9 @@ function LoginPage() {
   };
 
   return (
-    // 2. Main container with the background image
     <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center font-sans"
-      style={{ backgroundImage: `url(${HostelImage})` }}
+      style={{ backgroundImage: `url(/Hostel_image.png)` }}
     >
       {/* Dark overlay for better readability */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -53,7 +52,6 @@ function LoginPage() {
       {/* Login Form Container */}
       <div className="relative bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
         
-        {/* 3. Updated Logo and Title Section */}
         <div className="flex flex-col items-center mb-6">
           <img src={CollegeLogo} alt="College Logo" className="h-20 w-auto mb-4" />
           <h2 className="text-3xl font-bold text-center text-gray-800">
