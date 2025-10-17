@@ -7,7 +7,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 // The logo is still imported from assets, which is correct.
 import CollegeLogo from '../assets/iiitdm_kurnool_logo.jpeg';
-// The background image is no longer imported.
+// import './LoginPage.css';
 
 function LoginPage() {
   const [userType, setUserType] = useState('student');
@@ -42,10 +42,9 @@ function LoginPage() {
   };
 
   return (
-    <div
+   <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center font-sans"
-      style={{ backgroundImage: `url(/Hostel_image.png)` }}
-    >
+      style={{ backgroundImage: `url(/hostel_image.jpg)` }}>
       {/* Dark overlay for better readability */}
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
