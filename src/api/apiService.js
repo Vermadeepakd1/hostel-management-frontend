@@ -122,7 +122,6 @@ export const addFeePayment = async (feeData) => {
   const response = await axios.post('/fees/add', feeData);
   return response.data;
 };
-<<<<<<< HEAD
 
 // --- ANNOUNCEMENT FUNCTIONS ---
 export const getAnnouncements = async () => {
@@ -134,5 +133,3 @@ export const createAnnouncement = async (title, content) => {
   const response = await axios.post('/announcements/add', { title, content });
   return response.data;
 };
-=======
->>>>>>> c6f5af0b5664bc5770982a618e2cd654279ecb0b
