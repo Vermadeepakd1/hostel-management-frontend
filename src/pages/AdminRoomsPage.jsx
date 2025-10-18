@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import RoomForm from '../components/RoomForm';
 import { getRooms, addRoom } from '../api/apiService';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiPrinter } from 'react-icons/fi'; // 1. Import the FiPrinter icon
 
 const INITIAL_ROOM_STATE = { room_number: '', capacity: '' };
 
@@ -14,6 +14,11 @@ function AdminRoomsPage() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(INITIAL_ROOM_STATE);
+
+  // 2. This function opens the dedicated print page in a new tab
+  const handlePrint = () => {
+    window.open('/admin/rooms/print', '_blank');
+  };
 
   const fetchRooms = async () => {
     try {
@@ -44,7 +49,6 @@ function AdminRoomsPage() {
       fetchRooms(); // Refresh the list
     } catch (err) {
       console.error("Failed to save room:", err);
-      // You can set an error in the modal here
     }
   };
   
@@ -60,9 +64,15 @@ function AdminRoomsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Manage Rooms</h1>
-        <button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
-          <FiPlus /><span>Add Room</span>
-        </button>
+        {/* 3. Add the Print button next to the Add Room button */}
+        <div className="flex space-x-2">
+          <button onClick={handlePrint} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
+            <FiPrinter /><span>Print List</span>
+          </button>
+          <button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
+            <FiPlus /><span>Add Room</span>
+          </button>
+        </div>
       </div>
       {error && <div className="bg-red-100 p-3 rounded-md text-red-700">{error}</div>}
       <div className="bg-white shadow-md rounded-lg overflow-x-auto border">

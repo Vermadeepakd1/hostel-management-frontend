@@ -18,6 +18,9 @@ import StudentAnnouncementsPage from './pages/StudentAnnouncementsPage';
 import StudentMessMenuPage from './pages/StudentMessMenuPage'; // menu
 import AdminOutpassPage from './pages/AdminOutpassPage';
 import StudentOutpassPage from './pages/StudentOutpassPage';
+import PrintableStudentsPage from './pages/PrintableStudentsPage'; // print 
+import PrintableRoomsPage from './pages/PrintableRoomsPage'; // room print 
+import PrintableOutpassPage from './pages/PrintableOutpassPage';// outpass print 
 // Placeholders for pages we will build
 // const StudentFeesPage = () => <div>My Fees Page</div>;
 // const StudentComplaintsPage = () => <div>My Complaints Page</div>;
@@ -40,8 +43,12 @@ function App() {
           <Route path="announcements" element={<AdminAnnouncementsPage />} />
           <Route path="outpasses" element={<AdminOutpassPage />} />
         </Route>
-
+        {/* print rountes */}
+      <Route path="/admin/students/print" element={<PrintableStudentsPage />} />
+       <Route path="/admin/rooms/print" element={<PrintableRoomsPage />} />
+       <Route path="/student/outpass/print/:id" element={<PrintableOutpassPage />} />
         {/* Student Routes */}
+       
         <Route path="/student" element={<StudentLayout />}>
             <Route index element={<StudentDashboardPage />} />
             <Route path="dashboard" element={<StudentDashboardPage />} />

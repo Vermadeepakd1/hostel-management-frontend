@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { submitOutpassRequest, getStudentOutpasses } from '../api/apiService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { FiPrinter } from 'react-icons/fi'; // 1. Import the printer icon
 
 function StudentOutpassPage() {
   const [reason, setReason] = useState('');
@@ -36,7 +37,6 @@ function StudentOutpassPage() {
     };
     try {
       await submitOutpassRequest(outpassData);
-      // Clear form and refresh history
       setReason('');
       fetchHistory();
     } catch (error) {
@@ -44,6 +44,11 @@ function StudentOutpassPage() {
     }
   };
   
+  // 2. This function opens the dedicated print page in a new tab
+  const handlePrint = (id) => {
+    window.open(`/student/outpass/print/${id}`, '_blank');
+  };
+
   const StatusBadge = ({ status }) => {
     const statusClasses = {
       'Pending': 'bg-yellow-100 text-yellow-800',
@@ -69,7 +74,6 @@ function StudentOutpassPage() {
               selected={departureTime} 
               onChange={date => setDepartureTime(date)} 
               showTimeSelect 
-              // CORRECTED FORMAT
               dateFormat="dd/MM/yyyy, h:mm aa" 
               className="w-full p-2 border rounded mt-1" 
             />
@@ -80,7 +84,6 @@ function StudentOutpassPage() {
               selected={returnTime} 
               onChange={date => setReturnTime(date)} 
               showTimeSelect 
-              // CORRECTED FORMAT
               dateFormat="dd/MM/yyyy, h:mm aa" 
               className="w-full p-2 border rounded mt-1" 
             />
@@ -94,15 +97,29 @@ function StudentOutpassPage() {
         <h2 className="text-2xl font-bold mb-4">Your Out Pass History</h2>
         <ul className="space-y-4">
           {isLoading ? <p>Loading history...</p> : history.map(pass => (
-            <li key={pass.id} className="p-4 border rounded-md flex justify-between items-center">
-              <div>
-                <p className="font-semibold">{pass.reason}</p>
-                <p className="text-sm text-gray-500">Departure: {new Date(pass.departure_time).toLocaleString('en-IN')}</p>
-                <p className="text-sm text-gray-500">Return: {new Date(pass.expected_return_time).toLocaleString('en-IN')}</p>
+            <li key={pass.id} className="p-4 border rounded-md">
+              <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold">{pass.reason}</p>
+                    <p className="text-sm text-gray-500">Departure: {new Date(pass.departure_time).toLocaleString('en-IN')}</p>
+                    <p className="text-sm text-gray-500">Return: {new Date(pass.expected_return_time).toLocaleString('en-IN')}</p>
+                  </div>
+                  <StatusBadge status={pass.status} />
               </div>
-              <StatusBadge status={pass.status} />
+              {/* 3. Add the print button only if the pass is Approved */}
+              {pass.status === 'Approved' && (
+                <div className="text-right mt-2 border-t pt-2">
+                  <button onClick={() => handlePrint(pass.id)} className="text-blue-600 hover:text-blue-800 text-sm font-semibold flex items-center justify-end gap-1">
+                    <FiPrinter />
+                    Print Pass
+                  </button>
+                </div>
+              )}
             </li>
           ))}
+          {history.length === 0 && !isLoading && (
+              <p className="text-center text-gray-500 py-4">You have no out pass history.</p>
+          )}
         </ul>
       </div>
     </div>

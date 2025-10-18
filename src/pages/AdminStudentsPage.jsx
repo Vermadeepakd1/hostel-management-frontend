@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import StudentForm from '../components/StudentForm';
 import { getStudents, addStudent, updateStudent, deleteStudent } from '../api/apiService';
-import { FiPlus, FiEdit, FiTrash2, FiSearch } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiSearch, FiPrinter } from 'react-icons/fi';
 
 const INITIAL_STUDENT_STATE = {
   name: '', roll_no: '', email: '', phone: '', room_no: '',
@@ -13,7 +13,7 @@ const INITIAL_STUDENT_STATE = {
 };
 
 function AdminStudentsPage() {
-  const [students, setStudents] = useState([]); // This will be our master list
+  const [students, setStudents] = useState([]); // This is our master list
   const [filteredStudents, setFilteredStudents] = useState([]); // This is the list we display
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +21,11 @@ function AdminStudentsPage() {
   const [modalMode, setModalMode] = useState('add');
   const [selectedStudent, setSelectedStudent] = useState(INITIAL_STUDENT_STATE);
   const [searchQuery, setSearchQuery] = useState(''); // State for the search input
+
+  // This function opens the dedicated print page in a new tab
+  const handlePrint = () => {
+    window.open('/admin/students/print', '_blank');
+  };
 
   const fetchStudents = async () => {
     try {
@@ -39,7 +44,7 @@ function AdminStudentsPage() {
     fetchStudents();
   }, []);
 
-  // This useEffect will run whenever the search query changes
+  // This useEffect runs whenever the search query changes
   useEffect(() => {
     const result = students.filter(student =>
       student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -93,9 +98,15 @@ function AdminStudentsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Manage Students</h1>
-        <button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
-          <FiPlus /><span>Add Student</span>
-        </button>
+        <div className="flex space-x-2">
+          {/* UPDATED: "Print List" button added */}
+          <button onClick={handlePrint} className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
+            <FiPrinter /><span>Print List</span>
+          </button>
+          <button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
+            <FiPlus /><span>Add Student</span>
+          </button>
+        </div>
       </div>
 
       {/* --- Search Bar --- */}
@@ -123,7 +134,7 @@ function AdminStudentsPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {/* We now map over the filteredStudents list */}
+            {/* The table now correctly maps over the filteredStudents list */}
             {filteredStudents.map((student) => (
               <tr key={student.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm text-gray-900">{student.name}</td>
