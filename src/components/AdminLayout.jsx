@@ -1,13 +1,18 @@
 // src/components/AdminLayout.jsx
 
-import React from 'react';
-// 👇 CORRECTED THIS LINE
+import React, { useState } from 'react'; // 1. Import useState
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { FaCalendarAlt, FaUserCircle } from 'react-icons/fa';
-import IIITDMLogo from '../assets/iiitdm_kurnool_logo.jpeg'; 
+import DatePicker from 'react-datepicker'; // 2. Import DatePicker
+import 'react-datepicker/dist/react-datepicker.css'; // Import its styles
+import IIITDMLogo from '../assets/iiitdm_kurnool_logo.jpeg';
 
 function AdminLayout() {
   const navigate = useNavigate();
+  // 3. Add state for the popups
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
 
   const handleLogout = () => {
     navigate('/login');
@@ -42,14 +47,55 @@ function AdminLayout() {
                 <NavItem to="/admin/rooms">Rooms</NavItem>
                 <NavItem to="/admin/complaints">Complaints</NavItem>
                 <NavItem to="/admin/announcements">Announcements</NavItem>
+                <NavItem to="/admin/outpasses">Out Passes</NavItem>
+                <NavItem to="/admin/fees">Fees</NavItem>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-                <FaCalendarAlt className="h-6 w-6 text-gray-600" />
-                <button onClick={handleLogout} className="flex items-center space-x-2 text-gray-600 hover:text-red-600">
-                    <FaUserCircle size={22} />
-                    <span>Logout</span>
+            {/* 4. UPDATED Right side icons with popups */}
+            <div className="hidden md:flex items-center space-x-2 relative">
+              <button
+                onClick={() => setShowCalendar(!showCalendar)}
+                className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <FaCalendarAlt size={20} className="text-gray-600" />
+              </button>
+              
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                >
+                  <FaUserCircle size={22} className="text-gray-600" />
                 </button>
+
+                {showProfileMenu && (
+                  <div className="absolute top-12 right-0 w-48 bg-white border rounded-lg shadow-lg py-1">
+                    <Link
+                      to="/admin/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      View Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {showCalendar && (
+                <div className="absolute top-12 right-0 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    inline
+                  />
+                </div>
+              )}
             </div>
           </div>
         </nav>

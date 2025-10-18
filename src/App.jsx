@@ -16,6 +16,8 @@ import StudentProfilePage from './pages/StudentProfilePage';
 import AdminAnnouncementsPage from './pages/AdminAnnouncementsPage';
 import StudentAnnouncementsPage from './pages/StudentAnnouncementsPage';
 import StudentMessMenuPage from './pages/StudentMessMenuPage'; // menu
+import AdminOutpassPage from './pages/AdminOutpassPage';
+import StudentOutpassPage from './pages/StudentOutpassPage';
 // Placeholders for pages we will build
 // const StudentFeesPage = () => <div>My Fees Page</div>;
 // const StudentComplaintsPage = () => <div>My Complaints Page</div>;
@@ -36,6 +38,7 @@ function App() {
           <Route path="complaints" element={<AdminComplaintsPage />} /> 
           <Route path="fees" element={<AdminFeePage />} /> {/* Use the real component */}
           <Route path="announcements" element={<AdminAnnouncementsPage />} />
+          <Route path="outpasses" element={<AdminOutpassPage />} />
         </Route>
 
         {/* Student Routes */}
@@ -47,6 +50,7 @@ function App() {
              <Route path="profile" element={<StudentProfilePage />} />
              <Route path="announcements" element={<StudentAnnouncementsPage />} />
              <Route path="menu" element={<StudentMessMenuPage />} />
+             <Route path="outpass" element={<StudentOutpassPage />}/>
         </Route>
         
       </Routes>

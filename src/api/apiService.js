@@ -117,3 +117,24 @@ export const changeStudentPassword = async (oldPassword, newPassword) => {
   const response = await axios.post('/auth/student/change-password', { oldPassword, newPassword });
   return response.data;
 };
+
+// --- OUT PASS FUNCTIONS ---
+export const submitOutpassRequest = async (outpassData) => {
+  const response = await axios.post('/student/outpass', outpassData);
+  return response.data;
+};
+
+export const getStudentOutpasses = async () => {
+  const response = await axios.get('/student/outpass');
+  return response.data;
+};
+
+export const getAllOutpasses = async () => {
+  const response = await axios.get('/outpasses');
+  return response.data;
+};
+
+export const updateOutpassStatus = async (id, status) => {
+  const response = await axios.put(`/outpasses/update/${id}`, { status });
+  return response.data;
+};
