@@ -70,13 +70,13 @@ function AdminLayout() {
 
                 {showProfileMenu && (
                   <div className="absolute top-12 right-0 w-48 bg-white border rounded-lg shadow-lg py-1">
-                    <Link
+                    {/* <Link
                       to="/admin/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setShowProfileMenu(false)}
                     >
                       View Profile
-                    </Link>
+                    </Link> */}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
