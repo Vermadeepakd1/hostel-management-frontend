@@ -4,8 +4,24 @@ import React, { useState, useEffect } from 'react';
 import { getRooms } from '../api/apiService';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import Skeleton from 'react-loading-skeleton'; // Import Skeleton
-import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
+// 1. Moved the Skeleton component outside the main function.
+// This is a best practice and prevents it from being re-declared on every render.
+const OccupancySkeleton = () => (
+  <div className="bg-white p-6 rounded-lg shadow-md border">
+    <h3 className="text-lg font-semibold text-gray-700 mb-4"><Skeleton width={150} /></h3>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map(i => ( // Render 4 placeholder circles
+        <div key={i} className="flex flex-col items-center">
+          <Skeleton circle={true} height={80} width={80} />
+          <p className="mt-2"><Skeleton width={50} /></p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 function OccupancyWidget() {
   const [occupancyByFloor, setOccupancyByFloor] = useState({});
@@ -13,6 +29,8 @@ function OccupancyWidget() {
 
   useEffect(() => {
     const fetchAndProcessRooms = async () => {
+      // Set loading to true at the start of the fetch
+      setIsLoading(true); 
       try {
         const rooms = await getRooms();
 
@@ -48,22 +66,7 @@ function OccupancyWidget() {
     fetchAndProcessRooms();
   }, []); // Empty dependency array means this runs once on mount
 
-  // Skeleton Loader Component
-  const OccupancySkeleton = () => (
-    <div className="bg-white p-6 rounded-lg shadow-md border">
-      <h3 className="text-lg font-semibold text-gray-700 mb-4"><Skeleton width={150} /></h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map(i => ( // Render 4 placeholder circles
-          <div key={i} className="flex flex-col items-center">
-            <Skeleton circle={true} height={80} width={80} />
-            <p className="mt-2"><Skeleton width={50} /></p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  // Render Skeleton while loading
+  // 2. Render Skeleton as a JSX tag (<... />) instead of calling a function.
   if (isLoading) {
     return <OccupancySkeleton />;
   }
@@ -81,9 +84,9 @@ function OccupancyWidget() {
                   value={data.percentage}
                   text={`${data.percentage}%`}
                   styles={buildStyles({
-                    textColor: '#333333', // text-light
-                    pathColor: '#4A90E2', // primary
-                    trailColor: '#d1d5db', // gray-300
+                    textColor: '#333333',
+                    pathColor: '#4A90E2',
+                    trailColor: '#d1d5db',
                     textSize: '24px',
                   })}
                 />
