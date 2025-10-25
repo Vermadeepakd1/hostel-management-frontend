@@ -22,33 +22,34 @@ function StudentFeesPage() {
     fetchFees();
   }, []);
 
-  if (isLoading) return <p>Loading your payment history...</p>;
+  if (isLoading) return <p className="text-center p-10">Loading your payment history...</p>;
 
   return (
     <div>
+      {/* Restored Header Style */}
       <h1 className="text-3xl font-bold text-gray-800 mb-6">My Fee History</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      
-      <div className="bg-white shadow-md rounded-lg overflow-x-auto border">
+
+      {error && <p className="text-red-500 bg-red-100 p-4 rounded-lg border border-red-300">{error}</p>}
+
+      {/* Restored Table Container Style */}
+      <div className="bg-white shadow-md rounded-lg overflow-x-auto border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
+          {/* Restored Table Header Style */}
           <thead className="bg-gray-50">
             <tr>
-              {/* CORRECTED: Updated table headers */}
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount Paid</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Remarks</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Paid</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remarks</th>
             </tr>
           </thead>
+          {/* Restored Table Body Style */}
           <tbody className="bg-white divide-y divide-gray-200">
             {payments.length > 0 ? (
               payments.map((payment) => (
-                // CORRECTED: Added the unique key prop
-                <tr key={payment.id} className="hover:bg-gray-50">
-                  {/* CORRECTED: Using the correct data field 'amount_paid' */}
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">₹{payment.amount_paid}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{new Date(payment.payment_date).toLocaleDateString()}</td>
-                  {/* CORRECTED: Using the correct data field 'remarks' */}
-                  <td className="px-6 py-4 text-sm text-gray-600">{payment.remarks}</td>
+                <tr key={payment.id} className="hover:bg-gray-50"> {/* Keep hover effect */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">₹{payment.amount_paid}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{new Date(payment.payment_date).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{payment.remarks}</td>
                 </tr>
               ))
             ) : (

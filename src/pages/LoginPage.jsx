@@ -4,10 +4,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginAdmin, loginStudent } from '../api/apiService';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-
-// The logo is still imported from assets, which is correct.
 import CollegeLogo from '../assets/iiitdm_kurnool_logo.jpeg';
-// import './LoginPage.css';
+// Removed the unused CSS import
 
 function LoginPage() {
   const [userType, setUserType] = useState('student');
@@ -42,21 +40,23 @@ function LoginPage() {
   };
 
   return (
-   <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center font-sans"
-      style={{ backgroundImage: `url(/hostel_image.jpg)` }}>
-      {/* Dark overlay for better readability */}
-      {/* <div className="absolute inset-0 bg-black bg-opacity-50"></div> */}
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4 font-sans" // Added bg-fixed and padding
+      style={{ backgroundImage: `url(/hostel_image.jpg)` }}
+    >
+      {/* REMOVED the explicit dark overlay div */}
 
-      {/* Login Form Container */}
-      <div className="relative bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+      {/* Login Form Container with Glass Effect */}
+      {/* 👇 Added backdrop-blur, bg-white/70, shadow-xl */}
+      <div className="relative bg-white/70 backdrop-blur-md p-8 rounded-xl shadow-xl w-full max-w-md">
         
         <div className="flex flex-col items-center mb-6">
           <img src={CollegeLogo} alt="College Logo" className="h-20 w-auto mb-4" />
-          <h2 className="text-3xl font-bold text-center text-gray-800">
+          {/* 👇 Adjusted text color for better contrast on glass */}
+          <h2 className="text-3xl font-bold text-center text-gray-900">
             Hostel Management System
           </h2>
-          <p className="text-gray-500 mt-2">Please sign in to continue</p>
+          <p className="text-gray-700 mt-2">Please sign in to continue</p>
         </div>
 
         <form onSubmit={handleLogin}>
@@ -67,7 +67,7 @@ function LoginPage() {
             <select
               value={userType}
               onChange={(e) => { setUserType(e.target.value); setError(''); setIdentifier(''); }}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-md bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500" // Added bg-white/80
             >
               <option value="student">Student</option>
               <option value="admin">Admin</option>
@@ -83,7 +83,7 @@ function LoginPage() {
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               required
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-md bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500" // Added bg-white/80
             />
           </div>
 
@@ -95,12 +95,12 @@ function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-md bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500" // Added bg-white/80
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-600" // Adjusted icon color
                 >
                   {isPasswordVisible ? <FiEyeOff /> : <FiEye />}
                 </button>
@@ -110,7 +110,7 @@ function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50" // Changed disabled style
           >
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
