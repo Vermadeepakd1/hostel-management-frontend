@@ -21,7 +21,7 @@ function AdminComplaintsPage() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // For room search
   const [statusFilter, setStatusFilter] = useState('All'); // For status buttons
-  const [hideResolved, setHideResolved] = useState(false); // For checkbox
+  const [hideResolved, setHideResolved] = useState(true); // For checkbox
 
   // Fetches all complaints from the backend
   const fetchComplaints = async () => {
