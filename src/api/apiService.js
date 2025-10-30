@@ -4,7 +4,7 @@ import axios from 'axios';
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.withCredentials = true;
 
-// --- AUTH FUNCTIONS ---
+// --- AUTH FUNCTIONS --- check admin or student 
 export const loginAdmin = async (username, password) => {
   const response = await axios.post('/admin/login', { username, password });
   return response.data;
@@ -19,15 +19,15 @@ export const logoutAdmin = async () => {
   return Promise.resolve({ message: "Logout successful" });
 };
 
-// --- ADMIN FUNCTIONS ---
+// --- ADMIN FUNCTIONS --- all api calls
 
-// 👇 THIS IS THE MISSING FUNCTION
+
 export const getAdminProfile = async () => {
   const response = await axios.get('/admin/profile');
   return response.data;
 };
 
-// --- STUDENT CRUD FUNCTIONS (FOR ADMIN) ---
+// --- STUDENT CRUD FUNCTIONS (FOR ADMIN) --- done by admin
 export const getStudents = async () => {
   const response = await axios.get('/students');
   return response.data;
@@ -91,8 +91,8 @@ export const createAnnouncement = async (title, content) => {
   const response = await axios.post('/announcements/add', { title, content });
   return response.data;
 };
-
-// --- STUDENT PORTAL FUNCTIONS ---
+// All Students Api calls by Students
+// --- STUDENT PORTAL FUNCTIONS --- 
 export const getStudentProfile = async () => {
   const response = await axios.get('/student/profile');
   return response.data;
@@ -118,7 +118,7 @@ export const changeStudentPassword = async (oldPassword, newPassword) => {
   return response.data;
 };
 
-// --- OUT PASS FUNCTIONS ---
+// --- OUT PASS FUNCTIONS --- include functions of both admin and student 
 export const submitOutpassRequest = async (outpassData) => {
   const response = await axios.post('/student/outpass', outpassData);
   return response.data;

@@ -18,7 +18,7 @@ const containerVariants = {
     opacity: 1,
     transition: {
       delayChildren: 0.1, // Start animating children after 0.1s
-      staggerChildren: 0.2, // Each child animates 0.2s after the previous one
+      staggerChildren: 0.4, // Each child animates 0.2s after the previous one
     },
   },
 };

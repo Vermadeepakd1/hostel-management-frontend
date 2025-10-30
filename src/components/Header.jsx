@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-// Make sure to import the new logoutAdmin function
-import { logoutAdmin } from '../api/apiService'; 
+
+import { logoutAdmin } from '../api/apiService';  // logout admin 
+// Importing specific icons from the Font Awesome (react-icons/fa) library
 import { FaBed, FaBars, FaTimes, FaCalendarAlt, FaUserCircle } from "react-icons/fa";
+// Used to provide a user-friendly date selection UI
 import DatePicker from 'react-datepicker';
+// Importing the CSS file for styling the date picker component
 import "react-datepicker/dist/react-datepicker.css";
 
 function Header() {
