@@ -3,11 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import RoomForm from '../components/RoomForm';
-import { getRooms, addRoom } from '../api/apiService';
-// 1. Import motion for animations and new icons
+
+// --- NEW --- (Import the new API function)
+import { getRooms, addRoom, uploadRoomsCSV } from '../api/apiService';
+// --- END NEW ---
+
 import { motion } from 'framer-motion';
-import { FiPlus, FiPrinter, FiSearch } from 'react-icons/fi';
-// 2. Import the new skeleton loader
+
+// --- NEW --- (Import the Upload icon)
+import { FiPlus, FiPrinter, FiSearch, FiUpload } from 'react-icons/fi';
+// --- END NEW ---
+
 import RoomTableSkeleton from '../components/RoomTableSkeleton';
 
 const INITIAL_ROOM_STATE = { room_number: '', capacity: '' };
@@ -20,8 +26,14 @@ function AdminRoomsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(INITIAL_ROOM_STATE);
   const [filterStatus, setFilterStatus] = useState('All');
-  // 3. Add state for the search term
   const [searchTerm, setSearchTerm] = useState('');
+
+  // --- NEW --- (State for the upload modal and file)
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(null);
+  // --- END NEW ---
 
   const handlePrint = () => {
     window.open('/admin/rooms/print', '_blank');
@@ -29,13 +41,13 @@ function AdminRoomsPage() {
 
   const fetchRooms = async () => {
     try {
-      setIsLoading(true); // Set loading true at the start
+      setIsLoading(true);
       const data = await getRooms();
       setRooms(data);
     } catch (err) {
       setError('Failed to fetch rooms. Please log in again.');
     } finally {
-      setIsLoading(false); // Set loading false at the end
+      setIsLoading(false);
     }
   };
 
@@ -58,7 +70,52 @@ function AdminRoomsPage() {
       console.error("Failed to save room:", err);
     }
   };
+
+  // --- NEW --- (Handler functions for CSV Upload)
   
+  // Opens the upload modal and resets state
+  const openUploadModal = () => {
+    setSelectedFile(null);
+    setUploadError(null);
+    setUploadSuccess(null);
+    setIsUploadModalOpen(true);
+  };
+
+  // Updates state when a file is selected
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+    setUploadError(null); // Clear previous errors
+    setUploadSuccess(null); // Clear previous success
+  };
+
+  // Handles the file submission
+  const handleCsvUpload = async () => {
+    if (!selectedFile) {
+      setUploadError("Please select a file first.");
+      return;
+    }
+
+    try {
+      const response = await uploadRoomsCSV(selectedFile);
+      setUploadSuccess(response.message); // Show success message
+      setUploadError(null);
+      setSelectedFile(null); // Clear file input
+      setIsUploadModalOpen(false); // Close modal on success
+      fetchRooms(); // Refresh the room list
+      
+      // Optionally alert user
+      alert(response.message); 
+
+    } catch (err) {
+      // The error 'err' is the data from the backend (e.g., { message: "Invalid CSV" })
+      console.error("Upload failed:", err);
+      setUploadError(err.message || "An unknown error occurred.");
+      setUploadSuccess(null);
+    }
+  };
+  // --- END NEW ---
+
+  // --- (Helper functions for status, no changes) ---
   const getRoomStatusString = (room) => {
     if (room.current_occupancy === 0) return 'Empty';
     if (room.current_occupancy >= room.capacity) return 'Full';
@@ -71,24 +128,20 @@ function AdminRoomsPage() {
     if (status === 'Full') return <span className="text-red-600 font-semibold">Full</span>;
     return <span className="text-yellow-600 font-semibold">Partially Filled</span>;
   };
+  // --- (End helper functions) ---
 
-  // 4. Update filteredRooms logic to include search
   const filteredRooms = rooms
     .filter(room => {
-      // First, filter by status
       if (filterStatus === 'All') return true;
       return getRoomStatusString(room) === filterStatus;
     })
     .filter(room => {
-      // Then, filter by search term (on room_number)
       return room.room_number.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-  // 5. Use the Skeleton Loader when isLoading is true
   if (isLoading) return <RoomTableSkeleton />;
 
   return (
-    // 6. Add page-level animation
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -96,7 +149,8 @@ function AdminRoomsPage() {
     >
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold text-gray-800">Manage Rooms</h1>
-        {/* 7. Add smooth transitions to buttons */}
+        
+        {/* --- MODIFIED --- (Added Upload CSV Button) */}
         <div className="flex space-x-2">
           <button 
             onClick={handlePrint} 
@@ -104,6 +158,16 @@ function AdminRoomsPage() {
           >
             <FiPrinter /><span>Print List</span>
           </button>
+          
+          {/* --- NEW --- (Upload CSV Button) */}
+          <button 
+            onClick={openUploadModal} 
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition-all duration-300"
+          >
+            <FiUpload /><span>Upload CSV</span>
+          </button>
+          {/* --- END NEW --- */}
+          
           <button 
             onClick={openAddModal} 
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition-all duration-300"
@@ -111,9 +175,11 @@ function AdminRoomsPage() {
             <FiPlus /><span>Add Room</span>
           </button>
         </div>
+        {/* --- END MODIFIED --- */}
+        
       </div>
 
-      {/* 8. New UI block for Filters and Search Bar */}
+      {/* --- (Filters and Search Bar, no changes) --- */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
         {/* Filter Buttons */}
         <div className="flex space-x-2 flex-wrap">
@@ -144,8 +210,12 @@ function AdminRoomsPage() {
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
       </div>
+      {/* --- (End Filters and Search Bar) --- */}
+
 
       {error && <div className="bg-red-100 p-3 rounded-md text-red-700">{error}</div>}
+      
+      {/* --- (Table, no changes) --- */}
       <div className="bg-white shadow-md rounded-lg overflow-x-auto border">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -159,7 +229,6 @@ function AdminRoomsPage() {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredRooms.length > 0 ? (
               filteredRooms.map((room) => (
-                // 9. Add animation and smooth hover to table rows
                 <motion.tr
                   key={room.id}
                   className="hover:bg-gray-50 transition-all duration-300"
@@ -183,6 +252,9 @@ function AdminRoomsPage() {
           </tbody>
         </table>
       </div>
+      {/* --- (End Table) --- */}
+      
+      {/* --- (Add/Edit Modal, no changes) --- */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Room">
         <RoomForm
           room={selectedRoom}
@@ -191,6 +263,60 @@ function AdminRoomsPage() {
           onCancel={() => setIsModalOpen(false)}
         />
       </Modal>
+
+      {/* --- NEW --- (Modal for CSV Upload) */}
+      <Modal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} title="Upload Rooms CSV">
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Select a .csv file to upload. Make sure it has the required headers: <br />
+            <code className="text-xs bg-gray-100 p-1 rounded">room_number, capacity</code>
+          </p>
+          
+          {/* File Input */}
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            className="w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-lg file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100"
+          />
+          
+          {/* Display Error/Success Messages */}
+          {uploadError && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+              {uploadError}
+            </div>
+          )}
+          {uploadSuccess && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+              {uploadSuccess}
+            </div>
+          )}
+          
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              onClick={() => setIsUploadModalOpen(false)}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCsvUpload}
+              disabled={!selectedFile} // Disable button if no file is selected
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Upload File
+            </button>
+          </div>
+        </div>
+      </Modal>
+      {/* --- END NEW --- */}
+
     </motion.div>
   );
 }

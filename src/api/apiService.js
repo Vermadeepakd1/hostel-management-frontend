@@ -138,3 +138,59 @@ export const updateOutpassStatus = async (id, status) => {
   const response = await axios.put(`/outpasses/update/${id}`, { status });
   return response.data;
 };
+
+// Add this near your other student functions (getStudents, addStudent, etc.)
+/**
+ * Uploads a CSV file of students to the backend.
+ * @param {File} fileObject The file object from the input field.
+ * @returns {Promise<any>} The response data from the server.
+ */
+export const uploadStudentsCSV = async (fileObject) => {
+  const formData = new FormData();
+  formData.append('file', fileObject); // The key 'file' must match the backend
+
+  try {
+    const response = await axios.post(
+      '/students/upload', // Use relative path
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        // withCredentials: true is already set globally in your file,
+        // but adding it here is fine for clarity.
+      }
+    );
+    return response.data;
+  } catch (error) {
+    // Re-throw the error data to be caught by the component
+    throw (error.response && error.response.data) ? error.response.data : error;
+  }
+};
+
+// Add this near your other room functions (getRooms, addRoom, etc.)
+/**
+ * Uploads a CSV file of rooms to the backend.
+ * @param {File} fileObject The file object from the input field.
+ * @returns {Promise<any>} The response data from the server.
+ */
+export const uploadRoomsCSV = async (fileObject) => {
+  const formData = new FormData();
+  formData.append('file', fileObject); // The key 'file' must match the backend
+
+  try {
+    const response = await axios.post(
+      '/rooms/upload', // Use relative path
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    // Re-throw the error data to be caught by the component
+    throw (error.response && error.response.data) ? error.response.data : error;
+  }
+};
