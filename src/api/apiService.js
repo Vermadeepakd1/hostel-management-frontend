@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -20,7 +19,6 @@ export const logoutAdmin = async () => {
 };
 
 // --- ADMIN FUNCTIONS --- all api calls
-
 
 export const getAdminProfile = async () => {
   const response = await axios.get('/admin/profile');
@@ -59,6 +57,28 @@ export const addRoom = async (roomData) => {
   return response.data;
 };
 
+// --- ADDED FUNCTION 1 ---
+/**
+ * Updates the capacity of a specific room.
+ * @param {string} id - The ID of the room to update
+ * @param {number} newCapacity - The new capacity number
+ */
+export const updateRoomCapacity = async (id, newCapacity) => {
+  // The body must be { capacity: newCapacity } as per your backend spec
+  const response = await axios.put(`/rooms/update/${id}`, { capacity: newCapacity });
+  return response.data;
+};
+
+// --- ADDED FUNCTION 2 ---
+/**
+ * Deletes a specific room.
+ * @param {string} id - The ID of the room to delete
+ */
+export const deleteRoom = async (id) => {
+  const response = await axios.delete(`/rooms/delete/${id}`);
+  return response.data;
+};
+
 // --- COMPLAINT MANAGEMENT FUNCTIONS (FOR ADMIN) ---
 export const getComplaints = async () => {
   const response = await axios.get('/complaints');
@@ -91,6 +111,7 @@ export const createAnnouncement = async (title, content) => {
   const response = await axios.post('/announcements/add', { title, content });
   return response.data;
 };
+
 // All Students Api calls by Students
 // --- STUDENT PORTAL FUNCTIONS --- 
 export const getStudentProfile = async () => {
@@ -172,7 +193,7 @@ export const uploadStudentsCSV = async (fileObject) => {
 /**
  * Uploads a CSV file of rooms to the backend.
  * @param {File} fileObject The file object from the input field.
- * @returns {Promise<any>} The response data from the server.
+ ** @returns {Promise<any>} The response data from the server.
  */
 export const uploadRoomsCSV = async (fileObject) => {
   const formData = new FormData();

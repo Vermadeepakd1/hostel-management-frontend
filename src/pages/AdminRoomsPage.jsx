@@ -4,15 +4,28 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import RoomForm from '../components/RoomForm';
 
-// --- NEW --- (Import the new API function)
-import { getRooms, addRoom, uploadRoomsCSV } from '../api/apiService';
-// --- END NEW ---
+// --- MODIFIED --- (Import the new API functions)
+import { 
+  getRooms, 
+  addRoom, 
+  uploadRoomsCSV,
+  updateRoomCapacity, // --- NEW ---
+  deleteRoom          // --- NEW ---
+} from '../api/apiService'; 
+// --- END MODIFIED ---
 
 import { motion } from 'framer-motion';
 
-// --- NEW --- (Import the Upload icon)
-import { FiPlus, FiPrinter, FiSearch, FiUpload } from 'react-icons/fi';
-// --- END NEW ---
+// --- MODIFIED --- (Import the new icons)
+import { 
+  FiPlus, 
+  FiPrinter, 
+  FiSearch, 
+  FiUpload,
+  FiEdit,   // --- NEW ---
+  FiTrash2  // --- NEW ---
+} from 'react-icons/fi';
+// --- END MODIFIED ---
 
 import RoomTableSkeleton from '../components/RoomTableSkeleton';
 
@@ -28,12 +41,10 @@ function AdminRoomsPage() {
   const [filterStatus, setFilterStatus] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // --- NEW --- (State for the upload modal and file)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(null);
-  // --- END NEW ---
 
   const handlePrint = () => {
     window.open('/admin/rooms/print', '_blank');
@@ -68,12 +79,66 @@ function AdminRoomsPage() {
       fetchRooms(); // Refresh the list
     } catch (err) {
       console.error("Failed to save room:", err);
+      // --- NEW --- (Use alert for consistency)
+      alert(`Error: ${err.response?.data?.message || 'Failed to save room'}`);
     }
   };
 
-  // --- NEW --- (Handler functions for CSV Upload)
+  // --- NEW HANDLER 1: UPDATE CAPACITY ---
+  const handleUpdateCapacity = async (roomId, currentCapacity) => {
+    const newCapacityStr = window.prompt("Enter new capacity:", currentCapacity);
+
+    if (!newCapacityStr) {
+      return; // Admin cancelled
+    }
+
+    const newCapacity = parseInt(newCapacityStr, 10);
+
+    if (isNaN(newCapacity) || newCapacity <= 0) {
+      alert("Invalid capacity. Please enter a positive number.");
+      return;
+    }
+
+    try {
+      const response = await updateRoomCapacity(roomId, newCapacity);
+      alert(response.message); // Show success message
+
+      // Update the state locally for instant UI change
+      setRooms(prevRooms =>
+        prevRooms.map(room =>
+          room.id === roomId ? { ...room, capacity: newCapacity } : room
+        )
+      );
+    } catch (err) {
+      // Handle specific 409 error from backend
+      const errorMessage = err.response?.data?.message || "Failed to update capacity.";
+      alert(`Error: ${errorMessage}`);
+    }
+  };
+
+  // --- NEW HANDLER 2: DELETE ROOM ---
+  const handleDeleteRoom = async (roomId) => {
+    if (!window.confirm("Are you sure you want to delete this room? This cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const response = await deleteRoom(roomId);
+      alert(response.message); // Show success message
+
+      // Update state locally: Remove the room from the list
+      setRooms(prevRooms => prevRooms.filter(room => room.id !== roomId));
+
+    } catch (err) {
+      // Handle specific 409 error from backend
+      const errorMessage = err.response?.data?.message || "Failed to delete room.";
+      alert(`Error: ${errorMessage}`);
+    }
+  };
+  // --- END NEW HANDLERS ---
+
   
-  // Opens the upload modal and resets state
+  // --- (Handler functions for CSV Upload, no changes) ---
   const openUploadModal = () => {
     setSelectedFile(null);
     setUploadError(null);
@@ -81,33 +146,26 @@ function AdminRoomsPage() {
     setIsUploadModalOpen(true);
   };
 
-  // Updates state when a file is selected
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    setUploadError(null); // Clear previous errors
-    setUploadSuccess(null); // Clear previous success
+    setUploadError(null); 
+    setUploadSuccess(null); 
   };
 
-  // Handles the file submission
   const handleCsvUpload = async () => {
     if (!selectedFile) {
       setUploadError("Please select a file first.");
       return;
     }
-
     try {
       const response = await uploadRoomsCSV(selectedFile);
-      setUploadSuccess(response.message); // Show success message
+      setUploadSuccess(response.message); 
       setUploadError(null);
-      setSelectedFile(null); // Clear file input
-      setIsUploadModalOpen(false); // Close modal on success
-      fetchRooms(); // Refresh the room list
-      
-      // Optionally alert user
+      setSelectedFile(null); 
+      setIsUploadModalOpen(false); 
+      fetchRooms(); 
       alert(response.message); 
-
     } catch (err) {
-      // The error 'err' is the data from the backend (e.g., { message: "Invalid CSV" })
       console.error("Upload failed:", err);
       setUploadError(err.message || "An unknown error occurred.");
       setUploadSuccess(null);
@@ -115,7 +173,7 @@ function AdminRoomsPage() {
   };
   // --- END NEW ---
 
-  // --- (Helper functions for status, no changes) ---
+  // --- (Helper functions, no changes) ---
   const getRoomStatusString = (room) => {
     if (room.current_occupancy === 0) return 'Empty';
     if (room.current_occupancy >= room.capacity) return 'Full';
@@ -147,10 +205,9 @@ function AdminRoomsPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* --- (Header and buttons, no changes) --- */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold text-gray-800">Manage Rooms</h1>
-        
-        {/* --- MODIFIED --- (Added Upload CSV Button) */}
         <div className="flex space-x-2">
           <button 
             onClick={handlePrint} 
@@ -158,16 +215,12 @@ function AdminRoomsPage() {
           >
             <FiPrinter /><span>Print List</span>
           </button>
-          
-          {/* --- NEW --- (Upload CSV Button) */}
           <button 
             onClick={openUploadModal} 
             className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition-all duration-300"
           >
             <FiUpload /><span>Upload CSV</span>
           </button>
-          {/* --- END NEW --- */}
-          
           <button 
             onClick={openAddModal} 
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 transition-all duration-300"
@@ -175,13 +228,10 @@ function AdminRoomsPage() {
             <FiPlus /><span>Add Room</span>
           </button>
         </div>
-        {/* --- END MODIFIED --- */}
-        
       </div>
-
+      
       {/* --- (Filters and Search Bar, no changes) --- */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-        {/* Filter Buttons */}
         <div className="flex space-x-2 flex-wrap">
           {filterOptions.map(status => (
             <button
@@ -197,8 +247,6 @@ function AdminRoomsPage() {
             </button>
           ))}
         </div>
-        
-        {/* Search Bar */}
         <div className="relative">
           <input
             type="text"
@@ -210,12 +258,10 @@ function AdminRoomsPage() {
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
       </div>
-      {/* --- (End Filters and Search Bar) --- */}
-
-
+      
       {error && <div className="bg-red-100 p-3 rounded-md text-red-700">{error}</div>}
       
-      {/* --- (Table, no changes) --- */}
+      {/* --- MODIFIED (Table) --- */}
       <div className="bg-white shadow-md rounded-lg overflow-x-auto border">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -224,6 +270,11 @@ function AdminRoomsPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Occupancy</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              
+              {/* --- NEW --- (Actions Column Header) */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              {/* --- END NEW --- */}
+              
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -240,11 +291,35 @@ function AdminRoomsPage() {
                   <td className="px-6 py-4 text-sm text-gray-500">{room.capacity}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{room.current_occupancy}</td>
                   <td className="px-6 py-4 text-sm">{getStatus(room)}</td>
+                  
+                  {/* --- NEW --- (Actions Column Data) */}
+                  <td className="px-6 py-4 text-sm">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleUpdateCapacity(room.id, room.capacity)}
+                        className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-all duration-200"
+                        title="Update Capacity"
+                      >
+                        <FiEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRoom(room.id)}
+                        className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200"
+                        title="Delete Room"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+                  </td>
+                  {/* --- END NEW --- */}
+                  
                 </motion.tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center py-6 text-gray-500">
+                {/* --- MODIFIED --- (colSpan) */}
+                <td colSpan="5" className="text-center py-6 text-gray-500">
+                {/* --- END MODIFIED --- */}
                   {searchTerm ? `No rooms found for "${searchTerm}"` : `No rooms match the filter "${filterStatus}"`}
                 </td>
               </tr>
@@ -264,7 +339,7 @@ function AdminRoomsPage() {
         />
       </Modal>
 
-      {/* --- NEW --- (Modal for CSV Upload) */}
+      {/* --- (Modal for CSV Upload, no changes) --- */}
       <Modal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} title="Upload Rooms CSV">
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
@@ -272,7 +347,6 @@ function AdminRoomsPage() {
             <code className="text-xs bg-gray-100 p-1 rounded">room_number, capacity</code>
           </p>
           
-          {/* File Input */}
           <input
             type="file"
             accept=".csv"
@@ -285,7 +359,6 @@ function AdminRoomsPage() {
               hover:file:bg-blue-100"
           />
           
-          {/* Display Error/Success Messages */}
           {uploadError && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {uploadError}
@@ -297,7 +370,6 @@ function AdminRoomsPage() {
             </div>
           )}
           
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-3 pt-4">
             <button
               onClick={() => setIsUploadModalOpen(false)}
@@ -307,7 +379,7 @@ function AdminRoomsPage() {
             </button>
             <button
               onClick={handleCsvUpload}
-              disabled={!selectedFile} // Disable button if no file is selected
+              disabled={!selectedFile}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Upload File
@@ -315,7 +387,6 @@ function AdminRoomsPage() {
           </div>
         </div>
       </Modal>
-      {/* --- END NEW --- */}
 
     </motion.div>
   );
